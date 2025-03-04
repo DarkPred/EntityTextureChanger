@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.darkpred.entitytexturechanger.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "entitytexturechanger.refmap.json",
+  "mixins": [
+  ],
+  "client": ["EntityRenderDispatcherMixin", "RenderTypeMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

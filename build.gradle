@@ -1,0 +1,188 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
+buildscript {
+    dependencies {
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'org.spongepowered.mixin' version '0.7.+'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'net.darkhax.curseforgegradle' version '1.1.25'
+}
+
+apply plugin: 'java'
+
+version = mod_version
+group = maven_group
+
+base {
+    archivesName = "$archives_name-forge-$minecraft_version"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
+}
+
+minecraft {
+    mappings channel: "parchment", version: "$parchment_date-$parchment_mc_version"
+
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+repositories {
+    maven { url = 'https://maven.parchmentmc.org' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:$minecraft_version-$forge_version"
+
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1")
+    implementation jarJar("io.github.llamalad7:mixinextras-forge:0.4.1") {
+        jarJar.ranged(it, "[0.4.1,)")
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    var replaceProperties = [minecraft_version            : minecraft_version, minecraft_version_range_lower: minecraft_version_range_lower,
+                             minecraft_version_range_upper: minecraft_version_range_upper,
+                             forge_loader_version_range   : forge_loader_version_range, forge_version_range: forge_version_range,
+                             mod_id                       : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+                             mod_author                   : mod_author, mod_description: mod_description
+    ]
+
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+tasks.withType(Jar).configureEach {
+    manifest {
+        attributes([
+                "Specification-Title"     : mod_name,
+                "Specification-Vendor"    : mod_author,
+                'Specification-Version'   : project.jar.archiveVersion,
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.jar.archiveVersion,
+                'Implementation-Vendor'   : mod_author,
+                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                'Timestamp'               : System.currentTimeMillis(),
+                'Built-On-Java'           : "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+                'Build-On-Minecraft'      : minecraft_version
+        ])
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.release = java_version.toInteger()
+}
+
+jar {
+    setArchiveClassifier('slim')
+}
+tasks.jarJar {
+    setArchiveClassifier('')
+}
+
+jar.finalizedBy('reobfJar')
+tasks.jarJar.finalizedBy('reobfJarJar')
+
+modrinth {
+    token = "${project.property("MODRINTH_TOKEN")}" ?: "no value"
+    projectId = "Insert id here"
+    versionNumber.set("$minecraft_version-$mod_version-${project.name}")
+    versionType.set("release")
+    uploadFile.set(tasks.jarJar)
+    versionName = "$mod_version for Forge $minecraft_version"
+    gameVersions = game_versions.split(",").toList()
+    debugMode = true
+    changelog.set(rootProject.file("CHANGELOG.md").text)
+}
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    group = "publishing"
+    description = "Publishes jar to CurseForge"
+    apiToken = project.property("CURSEFORGE_TOKEN") ?: "no value"
+    debugMode = true
+    var mainFile = upload(Insert num here, tasks.jarJar)
+    mainFile.addGameVersion(game_versions.split(","))
+    mainFile.displayName = "$mod_version for Forge $minecraft_version"
+    mainFile.changelog = rootProject.file("CHANGELOG.md").text
+    mainFile.changelogType = "markdown"
+    mainFile.releaseType = "release"
+}
+
+tasks.named("publish") {
+    finalizedBy("modrinth", "publishCurseForge")
+}
+
+// Disables Gradle's custom module metadata from being published to maven. The
+// metadata includes mapped dependencies which are not reasonably consumable by
+// other mod developers.
+tasks.withType(GenerateModuleMetadata).configureEach {
+    enabled = false
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId "$archives_name-forge-$minecraft_version"
+            version version
+            artifact tasks.jarJar
+            from components.java
+            pom.withXml {
+                asNode().dependencies.dependency.each { dep ->
+                    if(dep.artifactId.last().value().last() in ["forge", "mixinextras-forge"]) {
+                        assert dep.parent().remove(dep)
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        mavenLocal()
+    }
+}
