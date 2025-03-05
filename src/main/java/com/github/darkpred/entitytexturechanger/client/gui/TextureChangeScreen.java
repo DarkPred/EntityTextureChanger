@@ -30,17 +30,20 @@ public class TextureChangeScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        confirmButton = addRenderableWidget(new Button(width / 2 - 100, height / 4 + 96 + 12, 200, 20, new TranslatableComponent("markerscreen.confirm"), button -> {
+        confirmButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20, new TranslatableComponent("markerscreen.confirm"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), linkBox.getValue()));
             minecraft.setScreen(null);
         }));
-        clearButton = addRenderableWidget(new Button(width / 2 - 100, height / 4 + 96 + 32, 200, 20, new TranslatableComponent("markerscreen.clear"), button -> {
+        clearButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 30, 200, 20, new TranslatableComponent("markerscreen.clear"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), ""));
             minecraft.setScreen(null);
         }));
-        linkBox = addRenderableWidget(new EditBox(font, width / 2 - 100, 116, 200, 20, new TranslatableComponent("addServer.enterName")));
+        linkBox = addRenderableWidget(new EditBox(font, width / 2 - 200,  height / 4, 400, 20, new TranslatableComponent("addServer.enterName")));
         linkBox.setFocus(true);
         linkBox.setMaxLength(2000);
+        Optional<ITexReplacementCap> opt = ModCapabilities.getMarkerCap(target);
+        opt.filter(ITexReplacementCap::hasTexture).ifPresent(cap -> linkBox.setValue(cap.getTextureUrl()));
+        clearButton.active = opt.isPresent() && opt.get().hasTexture();
         setFocused(linkBox);
         linkBox.setResponder(string -> updateSelectButtonStatus());
         updateSelectButtonStatus();
