@@ -55,7 +55,7 @@ public class CustomHttpTexture extends SimpleTexture {
             connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0");
             connection.connect();
-            EntityTextureChanger.LOGGER.info("ResponseCode: {} ContentLength: {}", connection.getResponseCode(), connection.getContentLength());
+            EntityTextureChanger.LOGGER.debug("ResponseCode: {} ContentLength: {}", connection.getResponseCode(), connection.getContentLength());
             if (connection.getResponseCode() / 100 == 2) {
                 InputStream inputstream = connection.getInputStream();
                 NativeImage image = readImage(inputstream);
@@ -88,7 +88,7 @@ public class CustomHttpTexture extends SimpleTexture {
     }
 
     private void upload(NativeImage image) {
-        EntityTextureChanger.LOGGER.info("uploading: {}, width: {}, height: {}", getId(), image.getWidth(), image.getHeight());
+        EntityTextureChanger.LOGGER.debug("uploading: {}, width: {}, height: {}", getId(), image.getWidth(), image.getHeight());
         TextureUtil.prepareImage(getId(), image.getWidth(), image.getHeight());
         image.upload(0, 0, 0, true);
     }

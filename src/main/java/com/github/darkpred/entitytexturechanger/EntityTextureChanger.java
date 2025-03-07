@@ -40,7 +40,7 @@ public class EntityTextureChanger {
         MinecraftForge.EVENT_BUS.register(this);
         ModItems.register(FMLJavaModLoadingContext.get().getModEventBus());
         MessageHandler.INSTANCE.registerMessage(0, S2CSyncTextureMessage.class, S2CSyncTextureMessage::write, S2CSyncTextureMessage::new, S2CSyncTextureMessage::handle);
-        MessageHandler.INSTANCE.registerMessage(0, C2SSubmitTextureMessage.class, C2SSubmitTextureMessage::write, C2SSubmitTextureMessage::new, C2SSubmitTextureMessage::handle);
+        MessageHandler.INSTANCE.registerMessage(1, C2SSubmitTextureMessage.class, C2SSubmitTextureMessage::write, C2SSubmitTextureMessage::new, C2SSubmitTextureMessage::handle);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
