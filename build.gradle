@@ -131,8 +131,8 @@ tasks.jarJar.finalizedBy('reobfJarJar')
 
 modrinth {
     token = "${project.property("MODRINTH_TOKEN")}" ?: "no value"
-    projectId = "Insert id here"
-    versionNumber.set("$minecraft_version-$mod_version-${project.name}")
+    projectId = "kE0TK2CO"
+    versionNumber.set("$mod_version")
     versionType.set("release")
     uploadFile.set(tasks.jarJar)
     versionName = "$mod_version for Forge $minecraft_version"
@@ -145,7 +145,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     description = "Publishes jar to CurseForge"
     apiToken = project.property("CURSEFORGE_TOKEN") ?: "no value"
     debugMode = true
-    var mainFile = upload(Insert num here, tasks.jarJar)
+    var mainFile = upload(1213543, tasks.jarJar)
     mainFile.addGameVersion(game_versions.split(","))
     mainFile.displayName = "$mod_version for Forge $minecraft_version"
     mainFile.changelog = rootProject.file("CHANGELOG.md").text
