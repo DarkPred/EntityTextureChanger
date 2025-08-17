@@ -132,7 +132,7 @@ tasks.jarJar.finalizedBy('reobfJarJar')
 modrinth {
     token = "${project.property("MODRINTH_TOKEN")}" ?: "no value"
     projectId = "kE0TK2CO"
-    versionNumber.set("$mod_version")
+    versionNumber.set("$minecraft_version-$mod_version")
     versionType.set("release")
     uploadFile.set(tasks.jarJar)
     versionName = "$mod_version for Forge $minecraft_version"
