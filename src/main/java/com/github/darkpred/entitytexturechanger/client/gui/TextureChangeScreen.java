@@ -29,14 +29,14 @@ public class TextureChangeScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        confirmButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20, Component.translatable("markerscreen.confirm"), button -> {
+        confirmButton = addRenderableWidget(Button.builder(Component.translatable("markerscreen.confirm"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), linkBox.getValue()));
             minecraft.setScreen(null);
-        }));
-        clearButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 30, 200, 20, Component.translatable("markerscreen.clear"), button -> {
+        }).bounds(width / 2 - 100, height / 2, 200, 20).build());
+        clearButton = addRenderableWidget(Button.builder(Component.translatable("markerscreen.clear"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), ""));
             minecraft.setScreen(null);
-        }));
+        }).bounds(width / 2 - 100, height / 2 + 30, 200, 20).build());
         linkBox = addRenderableWidget(new EditBox(font, width / 2 - 200, height / 4, 400, 20, Component.translatable("addServer.enterName")));
         linkBox.setFocus(true);
         linkBox.setMaxLength(2000);

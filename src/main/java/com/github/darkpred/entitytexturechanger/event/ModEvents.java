@@ -1,8 +1,8 @@
 package com.github.darkpred.entitytexturechanger.event;
 
 import com.github.darkpred.entitytexturechanger.EntityTextureChanger;
-import com.github.darkpred.entitytexturechanger.capabilities.TexReplacementCapProvider;
 import com.github.darkpred.entitytexturechanger.capabilities.ModCapabilities;
+import com.github.darkpred.entitytexturechanger.capabilities.TexReplacementCapProvider;
 import com.github.darkpred.entitytexturechanger.network.MessageHandler;
 import com.github.darkpred.entitytexturechanger.network.S2CSyncTextureMessage;
 import net.minecraft.server.level.ServerPlayer;
