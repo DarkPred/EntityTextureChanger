@@ -32,7 +32,7 @@ public class C2SSubmitTextureMessage {
         ctx.get().enqueueWork(() -> {
             ServerPlayer player = ctx.get().getSender();
             if (player != null) {
-                Entity target = player.level.getEntity(targetId);
+                Entity target = player.level().getEntity(targetId);
                 if (target != null) {
                     ModCapabilities.getMarkerCap(target).ifPresent(iMarkerCap -> {
                         iMarkerCap.setTextureUrl(url);
