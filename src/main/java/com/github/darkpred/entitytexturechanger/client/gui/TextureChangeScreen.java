@@ -38,7 +38,7 @@ public class TextureChangeScreen extends Screen {
             minecraft.setScreen(null);
         }).bounds(width / 2 - 100, height / 2 + 30, 200, 20).build());
         linkBox = addRenderableWidget(new EditBox(font, width / 2 - 200, height / 4, 400, 20, Component.translatable("addServer.enterName")));
-        linkBox.setFocus(true);
+        linkBox.setFocused(true);
         linkBox.setMaxLength(2000);
         Optional<ITexReplacementCap> opt = ModCapabilities.getMarkerCap(target);
         opt.filter(ITexReplacementCap::hasTexture).ifPresent(cap -> linkBox.setValue(cap.getTextureUrl()));
