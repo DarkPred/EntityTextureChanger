@@ -30,7 +30,7 @@ public class ModEvents {
     public static void attachEntityCapabilities(PlayerEvent.StartTracking event) {
         ModCapabilities.getMarkerCap(event.getTarget()).ifPresent(iMarkerCap -> {
             if (iMarkerCap.hasTexture()) {
-                MessageHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getPlayer()), new S2CSyncTextureMessage(event.getTarget().getId(), iMarkerCap.getTextureUrl()));
+                MessageHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) event.getEntity()), new S2CSyncTextureMessage(event.getTarget().getId(), iMarkerCap.getTextureUrl()));
             }
         });
     }

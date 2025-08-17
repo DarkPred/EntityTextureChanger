@@ -7,8 +7,7 @@ import com.github.darkpred.entitytexturechanger.network.MessageHandler;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 
 import java.net.MalformedURLException;
@@ -23,22 +22,22 @@ public class TextureChangeScreen extends Screen {
     private EditBox linkBox;
 
     public TextureChangeScreen(Entity target) {
-        super(new TextComponent("Marker"));
+        super(Component.literal("Marker"));
         this.target = target;
     }
 
     @Override
     protected void init() {
         super.init();
-        confirmButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20, new TranslatableComponent("markerscreen.confirm"), button -> {
+        confirmButton = addRenderableWidget(new Button(width / 2 - 100, height / 2, 200, 20, Component.translatable("markerscreen.confirm"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), linkBox.getValue()));
             minecraft.setScreen(null);
         }));
-        clearButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 30, 200, 20, new TranslatableComponent("markerscreen.clear"), button -> {
+        clearButton = addRenderableWidget(new Button(width / 2 - 100, height / 2 + 30, 200, 20, Component.translatable("markerscreen.clear"), button -> {
             MessageHandler.INSTANCE.sendToServer(new C2SSubmitTextureMessage(target.getId(), ""));
             minecraft.setScreen(null);
         }));
-        linkBox = addRenderableWidget(new EditBox(font, width / 2 - 200,  height / 4, 400, 20, new TranslatableComponent("addServer.enterName")));
+        linkBox = addRenderableWidget(new EditBox(font, width / 2 - 200, height / 4, 400, 20, Component.translatable("addServer.enterName")));
         linkBox.setFocus(true);
         linkBox.setMaxLength(2000);
         Optional<ITexReplacementCap> opt = ModCapabilities.getMarkerCap(target);
